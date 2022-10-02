@@ -4,7 +4,7 @@ const SEMI_MAJOR: f64 = 6378137.0;
 const SEMI_MINOR: f64 = 6356752.314245;
 
 fn spherical_mercator(lat: f64) -> f64 {
-    SEMI_MAJOR * ((PI / 4.0) + (lat / 2.0)).tan().ln()
+    ((PI / 4.0) + (lat / 2.0)).tan().ln()
 }
 
 fn ellipsoidal_mercator(lat: f64) -> f64 {
@@ -12,7 +12,7 @@ fn ellipsoidal_mercator(lat: f64) -> f64 {
     let esin = e * lat.sin();
     let f = ((1.0 - esin) / (1.0 + esin)).powf(e / 2.0);
 
-    SEMI_MAJOR * (f * ((PI / 4.0) + (lat / 2.0)).tan()).ln()
+    (f * ((PI / 4.0) + (lat / 2.0)).tan()).ln()
 }
 
 fn inverse_ellipsoidal_mercator(y: f64) -> f64 {
@@ -22,7 +22,7 @@ fn inverse_ellipsoidal_mercator(y: f64) -> f64 {
     let e6 = e2 * e4;
     let e8 = e4 * e4;
 
-    let chi = (PI / 2.0) - (2.0 * E.powf(-y / SEMI_MAJOR).atan());
+    let chi = (PI / 2.0) - (2.0 * E.powf(-y).atan());
 
     let l2 = (e2 / 2.0) + ((5.0 * e4) / 24.0) + (e6 / 12.0) + ((13.0 * e8) / 360.0);
     let r2 = (2.0 * chi).sin();
@@ -67,7 +67,7 @@ fn main() {
 
         println!(
             "At {lat_deg}°: map: {:.3} km, ground: {:.3} km",
-            (y_spherical - y_ellipsoidal) / 1000.0,
+            (SEMI_MAJOR * (y_spherical - y_ellipsoidal)) / 1000.0,
             dist / 1000.0
         );
     }
