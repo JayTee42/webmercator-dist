@@ -43,18 +43,16 @@ fn meridian_distance(lat: f64) -> f64 {
     let n4 = n2 * n2;
 
     let l0 = 1.0 + (n2 / 4.0) + (n4 / 64.0);
-    let l2 = (-n / 2.0) + (n3 / 16.0);
+    let l2 = ((-3.0 * n) / 2.0) + ((3.0 * n3) / 16.0);
     let r2 = (2.0 * lat).sin();
-    let l4 = (-n2 / 16.0) + (n4 / 64.0);
+    let l4 = ((15.0 * n2) / 16.0) - ((15.0 * n4) / 64.0);
     let r4 = (4.0 * lat).sin();
-    let l6 = -n3 / 48.0;
+    let l6 = (-35.0 * n3) / 48.0;
     let r6 = (6.0 * lat).sin();
-    let l8 = (-5.0 * n4) / 512.0;
+    let l8 = (315.0 * n4) / 512.0;
     let r8 = (8.0 * lat).sin();
-    let pre = (SEMI_MAJOR + SEMI_MINOR) / 2.0;
-    let post = (2.0 * n * r2) / (1.0 + (2.0 * n * (2.0 * lat).cos()) + (n * n)).sqrt();
 
-    pre * ((l0 * lat) - (l2 * r2) + (l4 * r4) - (l6 * r6) + (l8 * r8) - post)
+    ((SEMI_MAJOR + SEMI_MINOR) / 2.0) * ((l0 * lat) + (l2 * r2) + (l4 * r4) + (l6 * r6) + (l8 * r8))
 }
 
 fn main() {
