@@ -1,3 +1,5 @@
+use core::f64;
+use std::env;
 use std::f64::consts::{E, PI};
 
 const SEMI_MAJOR: f64 = 6378137.0;
@@ -56,17 +58,37 @@ fn meridian_distance(lat: f64) -> f64 {
 }
 
 fn main() {
-    for lat_deg in 0..90 {
-        let lat = (lat_deg as f64).to_radians();
+    // Read the increment from the CLI.
+    let Some(incr_deg) = env::args()
+        .skip(1)
+        .next()
+        .and_then(|arg| arg.parse::<f64>().ok())
+    else {
+        println!("Usage: webmercator-dist <increment>");
+        return;
+    };
+
+    if !((incr_deg > 0.0) && (incr_deg <= 90.0)) {
+        println!("Increment should be in (0.0, 90.0].");
+        return;
+    }
+
+    // Perform the increment loop.
+    let mut lat_deg = 0.0f64;
+
+    while lat_deg <= 90.0 {
+        let lat = lat_deg.to_radians();
         let y_spherical = spherical_mercator(lat);
         let y_ellipsoidal = ellipsoidal_mercator(lat);
         let lat_spherical = inverse_ellipsoidal_mercator(y_spherical);
         let dist = meridian_distance(lat_spherical) - meridian_distance(lat);
 
         println!(
-            "At {lat_deg}°: map: {:.3} km, ground: {:.3} km",
+            "[{lat_deg:05.2}°] map: {:06.3} km, ground: {:06.3} km",
             (SEMI_MAJOR * (y_spherical - y_ellipsoidal)) / 1000.0,
             dist / 1000.0
         );
+
+        lat_deg += incr_deg;
     }
 }
