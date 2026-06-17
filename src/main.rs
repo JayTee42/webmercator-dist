@@ -60,8 +60,7 @@ fn meridian_distance(lat: f64) -> f64 {
 fn main() {
     // Read the increment from the CLI.
     let Some(incr_deg) = env::args()
-        .skip(1)
-        .next()
+        .nth(1)
         .and_then(|arg| arg.parse::<f64>().ok())
     else {
         println!("Usage: webmercator-dist <increment>");
